@@ -117,8 +117,8 @@
         left: parseFloat(document.getElementById("left").value),
         right: parseFloat(document.getElementById("right").value),
         color_list: document.getElementById("color_list").value.split(',').map(Number),
-        gain_shift: document.getElementById("gain_shift").value.split(',').map(Number),
-        pout_shift: document.getElementById("pout_shift").value.split(',').map(Number)
+        gain_shift: document.getElementById("gain_shift (optional)").value.split(',').map(Number),
+        pout_shift: document.getElementById("pout_shift (optional)").value.split(',').map(Number)
       };
 
       const response = await fetch("/process", {

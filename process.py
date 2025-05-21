@@ -63,10 +63,15 @@ def process():
         data["max_freq"]
     )
 
+    # Handle optional gain_shift and pout_shift
+    num_colors = len(data["color_list"])
+    gain_shift = data.get("gain_shift") or [0.0] * num_colors
+    pout_shift = data.get("pout_shift") or [0.0] * num_colors
+
     output_file = generate_plot(
         data_points,
-        data["gain_shift"],
-        data["pout_shift"],
+        gain_shift,
+        pout_shift,
         data["color_list"]
     )
 

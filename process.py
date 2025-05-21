@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import os
 import uuid
 
+import base64
+from io import BytesIO
+from PIL import Image
+
 app = Flask(__name__)
 OUTPUT_DIR = "static/results"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -11,7 +15,15 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 @app.route("/process", methods=["POST"])
 def process():
     data = request.json
-    image_path = data["image_file"]
+    image_data = data["image_data"].split(",")[1]  # Strip off data:image/png;base64,
+    image_bytes = base64.b64decode(image_data)
+    image = Image.open(BytesIO(image_bytes)).convert("RGB")
+
+    # Save image temporarily
+    image_path = f"static/tmp_{uuid.uuid4().hex}.png"
+    image.save(image_path)
+
+    # Use in your existing logic
     data_points = extract_data_from_plot(
         image_path,
         data["left"],

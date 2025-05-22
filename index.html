@@ -42,10 +42,10 @@
     <label>Color List (comma-separated ints)</label>
     <input type="text" id="color_list" placeholder="e.g., 1,2,3">
 
-    <label>Gain Shift (comma-separated floats)</label>
+    <label>Gain Shift (optional, comma-separated floats)</label>
     <input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
 
-    <label>Pout Shift (comma-separated floats)</label>
+    <label>Pout Shift (optional, comma-separated floats)</label>
     <input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
 
     <button type="submit">Submit</button>
@@ -117,8 +117,8 @@
         left: parseFloat(document.getElementById("left").value),
         right: parseFloat(document.getElementById("right").value),
         color_list: document.getElementById("color_list").value.split(',').map(Number),
-        gain_shift: document.getElementById("gain_shift (optional)").value.split(',').map(Number),
-        pout_shift: document.getElementById("pout_shift (optional)").value.split(',').map(Number)
+        gain_shift: document.getElementById("gain_shift").value.split(',').map(Number),
+        pout_shift: document.getElementById("pout_shift").value.split(',').map(Number)
       };
 
       const response = await fetch("/process", {

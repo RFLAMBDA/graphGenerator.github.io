@@ -1,68 +1,10 @@
-<!-- templates/index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gain vs Pout Extractor</title>
-  <style>
-    body { font-family: sans-serif; max-width: 700px; margin: auto; padding: 20px; }
-    input, textarea, button { width: 100%; margin-bottom: 10px; padding: 8px; }
-    #drop-zone {
-      border: 2px dashed #aaa; padding: 20px; text-align: center;
-      background-color: #f9f9f9; margin-bottom: 15px;
-    }
-    #drop-zone.dragover { background-color: #e0f7ff; }
-    #preview { max-width: 100%; margin-top: 10px; display: none; }
-  </style>
-</head>
-<body>
-
-  <h1>Gain vs Pout Extractor</h1>
-
-  <div id="drop-zone">Drop a PNG image here or click to select</div>
-  <input type="file" id="fileInput" accept="image/png" style="display: none;">
-  <img id="preview" />
-
-  <form id="extractForm">
-    <label>Max Frequency (int)</label>
-    <input type="number" id="max_freq" required>
-
-    <label>Top (float)</label>
-    <input type="number" id="top" step="any" required>
-
-    <label>Bottom (float)</label>
-    <input type="number" id="bottom" step="any" required>
-
-    <label>Left (float)</label>
-    <input type="number" id="left" step="any" required>
-
-    <label>Right (float)</label>
-    <input type="number" id="right" step="any" required>
-
-    <label>Color List (comma-separated ints)</label>
-    <input type="text" id="color_list" placeholder="e.g., 1,2,3">
-
-    <label>Gain Shift (optional, comma-separated floats)</label>
-    <input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
-
-    <label>Pout Shift (optional, comma-separated floats)</label>
-    <input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
-
-    <button type="submit">Submit</button>
-  </form>
-
-  <div id="output">
-    <h3>Output:</h3>
-    <img id="resultImage" style="max-width: 100%;">
-  </div>
-
-  <script>
-    let imageBase64 = "";
+let imageBase64 = "";
 
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("fileInput");
     const preview = document.getElementById("preview");
+    const output = document.getElementById("output");
+    const resultImage = document.getElementById("resultImage");
 
     dropZone.addEventListener("click", () => fileInput.click());
     dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("dragover"); });
@@ -107,10 +49,11 @@
         body: JSON.stringify(payload)
       });
 
+      
+      output.style.display = "none"; // hide until image is ready
+
+      console.log(response);
       const result = await response.json();
       document.getElementById("resultImage").src = result.image_url;
+      output.style.display = "block";
     });
-  </script>
-
-</body>
-</html>

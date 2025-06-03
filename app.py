@@ -156,36 +156,34 @@ def extract_data_from_plot(image_path, left, top, bottom, right, max_colors, dis
 def generate_plot(data_points, gain_shift, pout_shift, color_list):
     output_file = os.path.join(OUTPUT_DIR, f"plot_{uuid.uuid4().hex}.png")
     plt.figure()
-    i = 1
-    vals = []
-    legends = []
-    for color, (x, y) in data_points.items():
-        if x and y:  # Check if extracted points exist
-            line, = plt.plot(x, y, color=np.array(color) / 255, label=f"Color {i}", linewidth=2)
-            vals.append(line)
-        i+=1
-        
+    rgb_keys = list(data_points.keys())
+    for i, rgb in enumerate(rgb_keys):
+        x_vals, y_vals = data_points[rgb]
+        shifted_x = [x + pout_shift[i] for x in x_vals]
+        shifted_y = [y + gain_shift[i] for y in y_vals]
+        label = f"{color_list[i]}GHz" if color_list[i] != 0 else f"Color {i+1}"
+        plt.plot(shifted_x, shifted_y, color=np.array(rgb) / 255, label=label)
     plt.xlabel("Pout (dBm)")
     plt.ylabel("Gain (dB)")
     plt.title("Gain vs. Pout")
-    plt.legend()
     plt.grid(True)
+    handles, labels = plt.gca().get_legend_handles_labels()
+    if handles:
+        plt.legend()
     plt.savefig(output_file)
     plt.close()
     return output_file
 
-# --- Main processing endpoint ---
-@app.route("/process", methods=["POST"])
-def process():
+
+# --- Step 1: initial image processing ---
+@app.route("/process-initial", methods=["POST"])
+def process_initial():
     data = request.json
-    image_data = data["image_data"].split(",")[1]  # Strip data:image/png;base64,...
+    image_data = data["image_data"].split(",")[1]
     image_bytes = base64.b64decode(image_data)
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
-
-    # Save temp image
     image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
     image.save(image_path)
-
     data_points = extract_data_from_plot(
         image_path,
         data["left"],
@@ -194,21 +192,26 @@ def process():
         data["right"],
         data["max_freq"]
     )
+    request_id = uuid.uuid4().hex
+    session_file = os.path.join(OUTPUT_DIR, f"session_{request_id}.npz")
+    np.savez(session_file, **{str(k): v for k, v in data_points.items()})
+    gain_shift = [0.0] * len(data_points)
+    pout_shift = [0.0] * len(data_points)
+    color_list = [0.0] * len(data_points)
+    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
+    return jsonify({"image_path": f"/{output_file}", "session_id": request_id})
 
-    print("data len",len(data_points))
-    sys.stdout.flush()
-    # Handle optional gain_shift and pout_shift
-    num_colors = len(data_points.keys())
-    gain_shift = data.get("gain_shift") or [0.0] * num_colors
-    pout_shift = data.get("pout_shift") or [0.0] * num_colors
-
-    output_file = generate_plot(
-        data_points,
-        gain_shift,
-        pout_shift,
-        data["color_list"]
-    )
-
+# --- Step 2: apply shifts and relabel ---
+@app.route("/process-shift", methods=["POST"])
+def process_shift():
+    data = request.json
+    session_file = os.path.join(OUTPUT_DIR, f"session_{data['session_id']}.npz")
+    npz_data = np.load(session_file, allow_pickle=True)
+    data_points = {eval(k): tuple(v) for k, v in npz_data.items()}
+    gain_shift = data.get("gain_shift") or [0.0] * len(data_points)
+    pout_shift = data.get("pout_shift") or [0.0] * len(data_points)
+    color_list = data.get("color_list") or [0.0] * len(data_points)
+    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
     return jsonify({"image_url": f"/{output_file}"})
 
 # --- Serve static files ---

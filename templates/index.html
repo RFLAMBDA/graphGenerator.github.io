@@ -20,42 +20,33 @@
 
   <h1>Gain vs Pout Extractor</h1>
 
-  <div id="drop-zone">Drop a PNG image here or click to select</div>
-  <input type="file" id="fileInput" accept="image/png" style="display: none;">
-  <img id="preview" />
+  <!-- Step 1: Upload + Region Selection -->
+  <div id="step1">
+    <div id="drop-zone">Drop a PNG image here or click to select</div>
+    <input type="file" id="fileInput" accept="image/png" style="display: none;">
+    <img id="preview" />
 
-  <form id="extractForm">
-    <label>Max Frequency (int)</label>
-    <input type="number" id="max_freq" required>
-
-    <label>Top (float)</label>
-    <input type="number" id="top" step="any" required>
-
-    <label>Bottom (float)</label>
-    <input type="number" id="bottom" step="any" required>
-
-    <label>Left (float)</label>
-    <input type="number" id="left" step="any" required>
-
-    <label>Right (float)</label>
-    <input type="number" id="right" step="any" required>
-
-    <label>Color List (comma-separated ints)</label>
-    <input type="text" id="color_list" placeholder="e.g., 1,2,3">
-
-    <label>Gain Shift (optional, comma-separated floats)</label>
-    <input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
-
-    <label>Pout Shift (optional, comma-separated floats)</label>
-    <input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
-
-    <button type="submit">Submit</button>
-  </form>
-
-  <div id="output">
-    <h3>Output:</h3>
-    <img id="resultImage" style="max-width: 100%;">
+    <label>Max Frequency:</label><input type="number" id="max_freq" required>
+    <label>Top:</label><input type="number" id="top" step="any" required>
+    <label>Bottom:</label><input type="number" id="bottom" step="any" required>
+    <label>Left:</label><input type="number" id="left" step="any" required>
+    <label>Right:</label><input type="number" id="right" step="any" required>
+    <button id="submit-initial">Submit Initial</button>
   </div>
+
+  <h3>Initial Plot</h3>
+  <img id="initialPlot" />
+
+  <!-- Step 2: Gain/Pout Shift -->
+  <div id="step2" style="display:none;">
+    <label>Color List (comma-separated):</label><input type="text" id="color_list" placeholder="e.g., 2,4,6">
+    <label>Gain Shift (optional, comma-separated):</label><input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
+    <label>Pout Shift (optional, comma-separated):</label><input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
+    <button id="submit-shift">Apply Shift</button>
+  </div>
+
+  <h3>Final Plot</h3>
+  <img id="finalPlot" />
 
   <script src="{{ url_for('static', filename='process.js') }}"></script>
 

@@ -157,20 +157,32 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     output_file = os.path.join(OUTPUT_DIR, f"plot_{uuid.uuid4().hex}.png")
     plt.figure()
     rgb_keys = list(data_points.keys())
+    max_x = -1
+    min_x = sys.maxsize
+    max_y = -1
+    min_y = sys.maxsize
     for i, rgb in enumerate(rgb_keys):
         x_vals, y_vals = data_points[rgb]
         shifted_x = [x + pout_shift[i] for x in x_vals]
         shifted_y = [y + gain_shift[i] for y in y_vals]
+        max_x = max(max_x, max(shifted_x))
+        min_x = min(min_x, min(shifted_x))
+        max_y = max(max_y, max(shifted_y))
+        min_y = min(min_y, min(shifted_y))
         label = f"{color_list[i]}GHz" if color_list[i] != 0 else f"Color {i+1}"
         plt.plot(shifted_x, shifted_y, color=np.array(rgb) / 255, label=label)
     plt.xlabel("Pout (dBm)")
     plt.ylabel("Gain (dB)")
     plt.title("Gain vs. Pout")
     plt.grid(True)
+    plt.xticks(np.arange(np.ceil(min_x), np.ceil(max_x)+1, np.ceil((max_x - min_x)/5)))
+    plt.yticks(np.arange(np.ceil(min_y), np.ceil(max_y)+1, np.ceil((max_y - min_y)/5)))
+    plt.gca().set_aspect('equal', adjustable='box')
     handles, labels = plt.gca().get_legend_handles_labels()
+    plt.tight_layout()
     if handles:
-        plt.legend()
-    plt.savefig(output_file)
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.savefig(output_file, bbox_inches='tight')
     plt.close()
     return output_file
 

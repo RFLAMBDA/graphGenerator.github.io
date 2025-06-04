@@ -29,6 +29,7 @@ let imageBase64 = "";
 
     document.getElementById("submit-initial").addEventListener("click", async () => {
       if (!imageBase64) return alert("Please upload a PNG image.");
+      document.getElementById("loadingInit").style.display = "block";
 
       const payload = {
         image_data: imageBase64,
@@ -51,10 +52,12 @@ let imageBase64 = "";
 
       // Show second form
       document.getElementById("step2").style.display = "block";
+      document.getElementById("loadingInit").style.display = "none";
     });
 
     document.getElementById("submit-shift").addEventListener("click", async () => {
       if (!sessionId) return alert("No session found.");
+      document.getElementById("loadingFinal").style.display = "block";
 
       const payload = {
         session_id: sessionId,
@@ -75,4 +78,5 @@ let imageBase64 = "";
 
       const result = await response.json();
       document.getElementById("finalPlot").src = result.image_url;
+      document.getElementById("loadingFinal").style.display = "none";
     });

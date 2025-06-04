@@ -38,6 +38,7 @@
   </div>
 
   <h3>Initial Plot</h3>
+  <div id="loadingInit" style="display: none; font-weight: bold; color: gray;">Loading...</div>
   <img id="initialPlot" />
 
   <!-- Step 2: Gain/Pout Shift -->
@@ -49,6 +50,7 @@
   </div>
 
   <h3>Final Plot</h3>
+  <div id="loadingFinal" style="display: none; font-weight: bold; color: gray;">Loading...</div>
   <img id="finalPlot" />
 
   <script src="{{ url_for('static', filename='process.js') }}"></script>

@@ -157,10 +157,13 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     output_file = os.path.join(OUTPUT_DIR, f"plot_{uuid.uuid4().hex}.png")
     plt.figure()
     rgb_keys = list(data_points.keys())
+    max_freq = len(rgb_keys)
     max_x = -1
     min_x = sys.maxsize
     max_y = -1
     min_y = sys.maxsize
+    vals = []
+    legends = []
     for i, rgb in enumerate(rgb_keys):
         x_vals, y_vals = data_points[rgb]
         shifted_x = [x + pout_shift[i] for x in x_vals]
@@ -169,8 +172,10 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
         min_x = min(min_x, min(shifted_x))
         max_y = max(max_y, max(shifted_y))
         min_y = min(min_y, min(shifted_y))
-        label = f"{color_list[i]}GHz" if color_list[i] != 0 else f"Color {i+1}"
-        plt.plot(shifted_x, shifted_y, color=np.array(rgb) / 255, label=label)
+        label = color_list[i] if color_list[i] != 0 else f"Color {i+1}"
+        legends.append(label)
+        line, = plt.plot(shifted_x, shifted_y, color=np.array(rgb) / 255, label=label)
+        vals.append(line)
     plt.xlabel("Pout (dBm)")
     plt.ylabel("Gain (dB)")
     plt.title("Gain vs. Pout")
@@ -180,23 +185,23 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     plt.gca().set_aspect('equal', adjustable='box')
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.tight_layout()
-    d_keys = list(data_points.keys())
 
-    # Sort the zipped list by the first element (list1)
-    sorted_zip = sorted(zip(vals, legends, d_keys), key=lambda x: x[1])
+    if type(legends[0]) != str:
+        # Sort the zipped list by the first element (list1)
+        sorted_zip = sorted(zip(vals, legends, rgb_keys), key=lambda x: x[1])
 
-    # Unzip (split back into separate lists)
-    vals, legends, d_keys = zip(*sorted_zip)
+        # Unzip (split back into separate lists)
+        vals, legends, rgb_keys = zip(*sorted_zip)
+        
+        # Convert to lists (since zip returns tuples)
+        vals = list(vals)
+        legends = list(legends)
+        
+        for i in range(0, max_freq):
+            legends[i] = str(legends[i]) + "GHz"
 
-    # Convert to lists (since zip returns tuples)
-    vals = list(vals)
-    legends = list(legends)
-
-    for i in range(0, max_freq):
-    legends[i] = str(legends[i]) + "GHz"
-    
     if handles:
-        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        plt.legend(vals, legends,loc='center left', bbox_to_anchor=(1, 0.5))
     plt.savefig(output_file, bbox_inches='tight')
     plt.close()
     return output_file

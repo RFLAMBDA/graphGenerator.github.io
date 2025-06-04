@@ -180,6 +180,21 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     plt.gca().set_aspect('equal', adjustable='box')
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.tight_layout()
+    d_keys = list(data_points.keys())
+
+    # Sort the zipped list by the first element (list1)
+    sorted_zip = sorted(zip(vals, legends, d_keys), key=lambda x: x[1])
+
+    # Unzip (split back into separate lists)
+    vals, legends, d_keys = zip(*sorted_zip)
+
+    # Convert to lists (since zip returns tuples)
+    vals = list(vals)
+    legends = list(legends)
+
+    for i in range(0, max_freq):
+    legends[i] = str(legends[i]) + "GHz"
+    
     if handles:
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.savefig(output_file, bbox_inches='tight')

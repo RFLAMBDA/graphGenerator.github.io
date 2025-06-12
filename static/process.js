@@ -53,6 +53,10 @@ let imageBase64 = "";
       // Show second form
       document.getElementById("step2").style.display = "block";
       document.getElementById("loadingInit").style.display = "none";
+      const count = parseInt(document.getElementById("max_freq").value);
+      const zeros = Array(count).fill(0).join(",");
+      document.getElementById("gain_shift").value = zeros;
+      document.getElementById("pout_shift").value = zeros;
     });
 
     document.getElementById("submit-shift").addEventListener("click", async () => {

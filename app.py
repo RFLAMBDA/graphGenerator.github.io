@@ -15,9 +15,11 @@ import sys
 # --- Define Flask app and output dir ---
 app = Flask(__name__)
 
+APP_VERSION = "1.0.0"
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", version=APP_VERSION)
 
 OUTPUT_DIR = "static/results"
 os.makedirs(OUTPUT_DIR, exist_ok=True)

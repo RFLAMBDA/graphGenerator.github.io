@@ -19,7 +19,7 @@
 </head>
 <body>
 
-  <h1>Gain vs Pout Extractor</h1>
+  <h1>Gain vs Pout Extractor <small style="color: gray;">v{{ version }}</small></h1>
   <h2>Sample Marker:</h2>
   <img id="sample" src="../static/sample.png" />
 
@@ -29,7 +29,7 @@
     <input type="file" id="fileInput" accept="image/png" style="display: none;">
     <img id="preview" />
 
-    <label>Max Frequency:</label><input type="number" id="max_freq" required>
+    <label>Number of Frequencies:</label><input type="number" id="max_freq" required>
     <label>Top(T):</label><input type="number" id="top" step="any" required>
     <label>Bottom(B):</label><input type="number" id="bottom" step="any" required>
     <label>Left(L):</label><input type="number" id="left" step="any" required>

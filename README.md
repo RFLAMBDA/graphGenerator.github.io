@@ -37,7 +37,7 @@ gain-vs-pout-app/
 
 ---
 
-## ⚙️ Setup & Run
+## ⚙️ Setup & Run Locally
 
 ### With Docker
 
@@ -63,3 +63,7 @@ python app.py
 ```
 
 Then open http://localhost:5000
+
+## 📫Deploy Server
+
+Visit https://dashboard.render.com/web/srv-d0t593adbo4c739asbkg/deploys/dep-d1aahlripnbc739u2lgg

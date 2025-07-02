@@ -15,7 +15,7 @@ import sys
 # --- Define Flask app and output dir ---
 app = Flask(__name__)
 
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 
 @app.route("/")
 def index():
@@ -167,21 +167,21 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     vals = []
     legends = []
 
-    if type(legends[0]) != str:
-        # Sort the zipped list by the first element (list1)
-        sorted_zip = sorted(zip(vals, legends, rgb_keys, gain_shift, pout_shift), key=lambda x: x[1])
+    # Sort the zipped list by the first element (list1)
+    sorted_zip = sorted(zip(color_list, list(range(0, len(color_list)))), key=lambda x: x[0])
 
-        # Unzip (split back into separate lists)
-        vals, legends, rgb_keys, gain_shift, pout_shift = zip(*sorted_zip)
+    # Unzip (split back into separate lists)
+    _, order = zip(*sorted_zip)
+    
+    # Convert to lists (since zip returns tuples)
+    sorted_zip = sorted(zip(list(order), pout_shift, gain_shift), key=lambda x: x[0])
+
+    # Unzip (split back into separate lists)
+    _, pout_shift, gain_shift = zip(*sorted_zip)
+
+    pout_shift = list(pout_shift)
+    gain_shift = list(gain_shift)
         
-        # Convert to lists (since zip returns tuples)
-        vals = list(vals)
-        legends = list(legends)
-        gain_shift = list(gain_shift)
-        pout_shift = list(pout_shift)
-        
-        for i in range(0, max_freq):
-            legends[i] = str(legends[i]) + "GHz"
 
     for i, rgb in enumerate(rgb_keys):
         x_vals, y_vals = data_points[rgb]
@@ -195,6 +195,21 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
         legends.append(label)
         line, = plt.plot(shifted_x, shifted_y, color=np.array(rgb) / 255, label=label)
         vals.append(line)
+
+    if type(legends[0]) != str:
+        # Sort the zipped list by the first element (list1)
+        sorted_zip = sorted(zip(vals, legends, rgb_keys), key=lambda x: x[1])
+
+        # Unzip (split back into separate lists)
+        vals, legends, rgb_keys = zip(*sorted_zip)
+        
+        # Convert to lists (since zip returns tuples)
+        vals = list(vals)
+        legends = list(legends)
+        
+        for i in range(0, max_freq):
+            legends[i] = str(legends[i]) + "GHz"
+
     plt.xlabel("Pout (dBm)")
     plt.ylabel("Gain (dB)")
     plt.title("Gain vs. Pout")
@@ -204,7 +219,6 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     plt.gca().set_aspect('equal', adjustable='box')
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.tight_layout()
-
     if handles:
         plt.legend(vals, legends,loc='center left', bbox_to_anchor=(1, 0.5))
     plt.savefig(output_file, bbox_inches='tight')

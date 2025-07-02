@@ -4,8 +4,8 @@ A Flask + JavaScript web app that converts amplifier gain vs. output power plots
 
 ---
 
-## 🚀 Features
-
+## 🚀 Features Version 1.0.0
+    
 - Upload a PNG plot image in your browser  
 - Automatically extract curve data points  
 - Adjust curves with `gain_shift` and `pout_shift`  

@@ -41,9 +41,18 @@
   <div id="loadingInit" style="display: none; font-weight: bold; color: gray;">Loading...</div>
   <img id="initialPlot" />
 
-  <!-- Step 2: Gain/Pout Shift -->
+  <!-- Step 2: Relabel -->
   <div id="step2" style="display:none;">
     <label>Color List (comma-separated):</label><input type="text" id="color_list" placeholder="e.g., 2,4,6">
+    <button id="submit-relabel">Apply Color Label</button>
+  </div>
+
+  <h3>Relabel Plot</h3>
+  <div id="loadingRelabel" style="display: none; font-weight: bold; color: gray;">Loading...</div>
+  <img id="relabelPlot" />
+
+  <!-- Step 3: Gain/Pout Shift -->
+  <div id="step3" style="display:none;">
     <label>Gain Shift (optional, comma-separated):</label><input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
     <label>Pout Shift (optional, comma-separated):</label><input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
     <button id="submit-shift">Apply Shift</button>

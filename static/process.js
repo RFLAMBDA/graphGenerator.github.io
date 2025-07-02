@@ -1,4 +1,4 @@
-let imageBase64 = "";
+    let imageBase64 = "";
     let sessionId = "";
 
     const dropZone = document.getElementById("drop-zone");
@@ -27,6 +27,7 @@ let imageBase64 = "";
       reader.readAsDataURL(file);
     }
 
+    //Step 1
     document.getElementById("submit-initial").addEventListener("click", async () => {
       if (!imageBase64) return alert("Please upload a PNG image.");
       document.getElementById("loadingInit").style.display = "block";
@@ -59,6 +60,33 @@ let imageBase64 = "";
       document.getElementById("pout_shift").value = zeros;
     });
 
+    //Step 2
+    document.getElementById("submit-relabel").addEventListener("click", async () => {
+      if (!sessionId) return alert("No session found.");
+      document.getElementById("loadingRelabel").style.display = "block";
+
+      const payload = {
+        session_id: sessionId,
+        color_list: document.getElementById("color_list").value.split(',').map(Number),
+        gain_shift: null,
+        pout_shift: null
+      };
+
+      const response = await fetch("/process-relabel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      document.getElementById("relabelPlot").src = result.image_url;
+      document.getElementById("loadingRelabel").style.display = "none";
+
+      // Show third form
+      document.getElementById("step3").style.display = "block";
+    });
+
+    //Step 3
     document.getElementById("submit-shift").addEventListener("click", async () => {
       if (!sessionId) return alert("No session found.");
       document.getElementById("loadingFinal").style.display = "block";

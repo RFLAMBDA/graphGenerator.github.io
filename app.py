@@ -166,6 +166,23 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     min_y = sys.maxsize
     vals = []
     legends = []
+
+    if type(legends[0]) != str:
+        # Sort the zipped list by the first element (list1)
+        sorted_zip = sorted(zip(vals, legends, rgb_keys, gain_shift, pout_shift), key=lambda x: x[1])
+
+        # Unzip (split back into separate lists)
+        vals, legends, rgb_keys, gain_shift, pout_shift = zip(*sorted_zip)
+        
+        # Convert to lists (since zip returns tuples)
+        vals = list(vals)
+        legends = list(legends)
+        gain_shift = list(gain_shift)
+        pout_shift = list(pout_shift)
+        
+        for i in range(0, max_freq):
+            legends[i] = str(legends[i]) + "GHz"
+
     for i, rgb in enumerate(rgb_keys):
         x_vals, y_vals = data_points[rgb]
         shifted_x = [x + pout_shift[i] for x in x_vals]
@@ -187,20 +204,6 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     plt.gca().set_aspect('equal', adjustable='box')
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.tight_layout()
-
-    if type(legends[0]) != str:
-        # Sort the zipped list by the first element (list1)
-        sorted_zip = sorted(zip(vals, legends, rgb_keys), key=lambda x: x[1])
-
-        # Unzip (split back into separate lists)
-        vals, legends, rgb_keys = zip(*sorted_zip)
-        
-        # Convert to lists (since zip returns tuples)
-        vals = list(vals)
-        legends = list(legends)
-        
-        for i in range(0, max_freq):
-            legends[i] = str(legends[i]) + "GHz"
 
     if handles:
         plt.legend(vals, legends,loc='center left', bbox_to_anchor=(1, 0.5))
@@ -235,7 +238,20 @@ def process_initial():
     output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
     return jsonify({"image_path": f"/{output_file}", "session_id": request_id})
 
-# --- Step 2: apply shifts and relabel ---
+# --- Step 2: apply relabel ---
+@app.route("/process-relabel", methods=["POST"])
+def process_relabel():
+    data = request.json
+    session_file = os.path.join(OUTPUT_DIR, f"session_{data['session_id']}.npz")
+    npz_data = np.load(session_file, allow_pickle=True)
+    data_points = {eval(k): tuple(v) for k, v in npz_data.items()}
+    gain_shift = data.get("gain_shift") or [0.0] * len(data_points)
+    pout_shift = data.get("pout_shift") or [0.0] * len(data_points)
+    color_list = data.get("color_list") or [0.0] * len(data_points)
+    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
+    return jsonify({"image_url": f"/{output_file}"})
+
+# --- Step 3: apply shifts ---
 @app.route("/process-shift", methods=["POST"])
 def process_shift():
     data = request.json

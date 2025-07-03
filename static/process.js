@@ -56,8 +56,10 @@
       document.getElementById("loadingInit").style.display = "none";
       const count = parseInt(document.getElementById("max_freq").value);
       const zeros = Array(count).fill(0).join(",");
+      const fives = Array(2).fill(5).join(",");
       document.getElementById("gain_shift").value = zeros;
       document.getElementById("pout_shift").value = zeros;
+      document.getElementById("scale").value = [8,6];
     });
 
     //Step 2
@@ -67,6 +69,7 @@
 
       const payload = {
         session_id: sessionId,
+        scale: document.getElementById("scale").value.split(',').map(Number),
         color_list: document.getElementById("color_list").value.split(',').map(Number),
         gain_shift: null,
         pout_shift: null
@@ -93,6 +96,7 @@
 
       const payload = {
         session_id: sessionId,
+        scale: document.getElementById("scale").value.split(',').map(Number),
         color_list: document.getElementById("color_list").value.split(',').map(Number),
         gain_shift: document.getElementById("gain_shift").value.trim()
           ? document.getElementById("gain_shift").value.split(',').map(Number)

@@ -15,7 +15,7 @@ import sys
 # --- Define Flask app and output dir ---
 app = Flask(__name__)
 
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.1.1"
 
 @app.route("/")
 def index():
@@ -155,9 +155,9 @@ def extract_data_from_plot(image_path, left, top, bottom, right, max_colors, dis
         return {}
 
 # --- Plotting and shifting logic ---
-def generate_plot(data_points, gain_shift, pout_shift, color_list):
+def generate_plot(data_points, gain_shift, pout_shift, color_list, x_ticks=8, y_ticks=6):
     output_file = os.path.join(OUTPUT_DIR, f"plot_{uuid.uuid4().hex}.png")
-    plt.figure()
+    plt.figure(figsize=(8, 6))
     rgb_keys = list(data_points.keys())
     max_freq = len(rgb_keys)
     max_x = -1
@@ -216,7 +216,9 @@ def generate_plot(data_points, gain_shift, pout_shift, color_list):
     plt.grid(True)
     plt.xticks(np.arange(np.ceil(min_x), np.ceil(max_x)+1, np.ceil((max_x - min_x)/5)))
     plt.yticks(np.arange(np.ceil(min_y), np.ceil(max_y)+1, np.ceil((max_y - min_y)/5)))
-    plt.gca().set_aspect('equal', adjustable='box')
+    # plt.gca().set_aspect('equal', adjustable='box')
+    # Enforce proportional scaling
+    plt.gca().set_aspect(y_ticks/x_ticks, adjustable='box')
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.tight_layout()
     if handles:
@@ -259,10 +261,11 @@ def process_relabel():
     session_file = os.path.join(OUTPUT_DIR, f"session_{data['session_id']}.npz")
     npz_data = np.load(session_file, allow_pickle=True)
     data_points = {eval(k): tuple(v) for k, v in npz_data.items()}
+    x_ticks, y_ticks = data.get("scale") or [0.0] * 2
     gain_shift = data.get("gain_shift") or [0.0] * len(data_points)
     pout_shift = data.get("pout_shift") or [0.0] * len(data_points)
     color_list = data.get("color_list") or [0.0] * len(data_points)
-    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
+    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list, x_ticks, y_ticks)
     return jsonify({"image_url": f"/{output_file}"})
 
 # --- Step 3: apply shifts ---
@@ -272,10 +275,11 @@ def process_shift():
     session_file = os.path.join(OUTPUT_DIR, f"session_{data['session_id']}.npz")
     npz_data = np.load(session_file, allow_pickle=True)
     data_points = {eval(k): tuple(v) for k, v in npz_data.items()}
+    x_ticks, y_ticks = data.get("scale") or [0.0] * 2
     gain_shift = data.get("gain_shift") or [0.0] * len(data_points)
     pout_shift = data.get("pout_shift") or [0.0] * len(data_points)
     color_list = data.get("color_list") or [0.0] * len(data_points)
-    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
+    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list, x_ticks, y_ticks)
     return jsonify({"image_url": f"/{output_file}"})
 
 # --- Serve static files ---

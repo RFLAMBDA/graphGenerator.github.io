@@ -41,8 +41,23 @@
   <div id="loadingInit" style="display: none; font-weight: bold; color: gray;">Loading...</div>
   <img id="initialPlot" />
 
-  <!-- Step 2: Relabel -->
+  <!-- Step 2: Add more color -->
   <div id="step2" style="display:none;">
+    <h2>Input single frequency Pout vs Pin plot (optional):</h2>
+    <div id="drop-zone_add">Drop a PNG image here or click to select</div>
+    <input type="file" id="fileInput_add" accept="image/png" style="display: none;">
+    <img id="preview_add" />
+    <label>Color Number (if number exist, data will be replaced; else if number do not, data will be created):</label><input type="text" id="color_num" placeholder="e.g., 2">
+    <button id="submit-add">Apply Added Color</button>
+  </div>
+
+  <h3>Added Plot</h3>
+  <div id="loadingAddMoreColor" style="display: none; font-weight: bold; color: gray;">Loading...</div>
+  <img id="moreColorPlot" />
+
+  
+  <!-- Step 3: Relabel -->
+  <div id="step3" style="display:none;">
     <label>Color List (comma-separated):</label><input type="text" id="color_list" placeholder="e.g., 2,4,6">
     <label>Scale (x span, y span):</label><input type="text" id="scale" placeholder="e.g. 5,5">
     <button id="submit-relabel">Apply Color Label</button>
@@ -52,8 +67,8 @@
   <div id="loadingRelabel" style="display: none; font-weight: bold; color: gray;">Loading...</div>
   <img id="relabelPlot" />
 
-  <!-- Step 3: Gain/Pout Shift -->
-  <div id="step3" style="display:none;">
+  <!-- Step 4: Gain/Pout Shift -->
+  <div id="step4" style="display:none;">
     <label>Gain Shift (optional, comma-separated):</label><input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
     <label>Pout Shift (optional, comma-separated):</label><input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
     <button id="submit-shift">Apply Shift</button>

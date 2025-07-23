@@ -4,6 +4,9 @@
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("fileInput");
     const preview = document.getElementById("preview");
+    const dropZone_add = document.getElementById("drop-zone_add");
+    const fileInput_add = document.getElementById("fileInput_add");
+    const preview_add = document.getElementById("preview_add");
 
     dropZone.addEventListener("click", () => fileInput.click());
     dropZone.addEventListener("dragover", e => {
@@ -63,6 +66,37 @@
     });
 
     //Step 2
+    document.getElementById("submit-add").addEventListener("click", async () => {
+      if (!imageBase64) return alert("Please upload a PNG image.");
+      document.getElementById("loadingAddMoreInit").style.display = "block";
+
+      const payload = {
+        image_data: imageBase64,
+        color_num: parseInt(document.getElementById("color_num").value)
+      };
+
+      const response = await fetch("/process-initial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      document.getElementById("moreColorPlot").src = result.image_path;
+      sessionId = result.session_id;
+
+      // Show second form
+      document.getElementById("step3").style.display = "block";
+      document.getElementById("loadingAddMoreColor").style.display = "none";
+      const count = parseInt(document.getElementById("max_freq").value);
+      const zeros = Array(count).fill(0).join(",");
+      const fives = Array(2).fill(5).join(",");
+      document.getElementById("gain_shift").value = zeros;
+      document.getElementById("pout_shift").value = zeros;
+      document.getElementById("scale").value = [8,6];
+    });
+
+    //Step 3
     document.getElementById("submit-relabel").addEventListener("click", async () => {
       if (!sessionId) return alert("No session found.");
       document.getElementById("loadingRelabel").style.display = "block";
@@ -86,10 +120,10 @@
       document.getElementById("loadingRelabel").style.display = "none";
 
       // Show third form
-      document.getElementById("step3").style.display = "block";
+      document.getElementById("step4").style.display = "block";
     });
 
-    //Step 3
+    //Step 4
     document.getElementById("submit-shift").addEventListener("click", async () => {
       if (!sessionId) return alert("No session found.");
       document.getElementById("loadingFinal").style.display = "block";

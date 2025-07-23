@@ -254,6 +254,28 @@ def process_initial():
     output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
     return jsonify({"image_path": f"/{output_file}", "session_id": request_id})
 
+# --- Step 2: add more color ---
+@app.route("/process-add", methods=["POST"])
+def process_initial():
+    data = request.json
+    image_data = data["image_data"].split(",")[1]
+    image_bytes = base64.b64decode(image_data)
+    image = Image.open(BytesIO(image_bytes)).convert("RGB")
+    image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
+    image.save(image_path)
+    data_points = extract_data_from_plot(
+        image_path,
+        data["color_num"]
+    )
+    request_id = uuid.uuid4().hex
+    session_file = os.path.join(OUTPUT_DIR, f"session_{request_id}.npz")
+    np.savez(session_file, **{str(k): v for k, v in data_points.items()})
+    gain_shift = [0.0] * len(data_points)
+    pout_shift = [0.0] * len(data_points)
+    color_list = [0.0] * len(data_points)
+    output_file = generate_plot(data_points, gain_shift, pout_shift, color_list)
+    return jsonify({"image_path": f"/{output_file}", "session_id": request_id})
+
 # --- Step 2: apply relabel ---
 @app.route("/process-relabel", methods=["POST"])
 def process_relabel():

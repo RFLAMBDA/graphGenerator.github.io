@@ -23,6 +23,7 @@ def index():
 
 OUTPUT_DIR = "static/results"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+data_points = []
 
 # --- Import your extraction function here or define inline (simplified stub below) ---
 def extract_data_from_plot(image_path, left, top, bottom, right, max_colors, distance_threshold=10, points_n=20):
@@ -237,7 +238,7 @@ def process_initial():
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
     image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
     image.save(image_path)
-    data_points = extract_data_from_plot(
+    global data_points = extract_data_from_plot(
         image_path,
         data["left"],
         data["top"],
@@ -256,19 +257,21 @@ def process_initial():
 
 # --- Step 2: add more color ---
 @app.route("/process-add", methods=["POST"])
-def process_initial():
+def process_add():
     data = request.json
     image_data = data["image_data"].split(",")[1]
     image_bytes = base64.b64decode(image_data)
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
     image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
     image.save(image_path)
-    data_points = extract_data_from_plot(
+    data_points_add = extract_data_from_plot(
         image_path,
         data["color_num"]
     )
     request_id = uuid.uuid4().hex
     session_file = os.path.join(OUTPUT_DIR, f"session_{request_id}.npz")
+    global data_points #make it sync globally
+    data_points = data_points.extend(data_points_add)
     np.savez(session_file, **{str(k): v for k, v in data_points.items()})
     gain_shift = [0.0] * len(data_points)
     pout_shift = [0.0] * len(data_points)

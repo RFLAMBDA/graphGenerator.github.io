@@ -75,7 +75,7 @@
         color_num: parseInt(document.getElementById("color_num").value)
       };
 
-      const response = await fetch("/process-initial", {
+      const response = await fetch("/process-add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

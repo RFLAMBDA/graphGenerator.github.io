@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory, render_template_
 import base64
 import uuid
 import os
+import random
 from io import BytesIO
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -155,6 +156,14 @@ def extract_data_from_plot(image_path, left, top, bottom, right, max_colors, dis
         sys.stdout.flush()
         return {}
 
+def get_random_rgb(exclude_list):
+    # Convert list of tuples/lists to set of tuples for fast lookup
+    exclude_set = set(tuple(rgb) for rgb in exclude_list)
+    while True:
+        rgb = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        if rgb not in exclude_set:
+            return rgb
+
 # --- Plotting and shifting logic ---
 def generate_plot(data_points, gain_shift, pout_shift, color_list, x_ticks=8, y_ticks=6):
     output_file = os.path.join(OUTPUT_DIR, f"plot_{uuid.uuid4().hex}.png")
@@ -238,7 +247,8 @@ def process_initial():
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
     image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
     image.save(image_path)
-    global data_points = extract_data_from_plot(
+    global data_points
+    data_points = extract_data_from_plot(
         image_path,
         data["left"],
         data["top"],
@@ -259,19 +269,37 @@ def process_initial():
 @app.route("/process-add", methods=["POST"])
 def process_add():
     data = request.json
-    image_data = data["image_data"].split(",")[1]
-    image_bytes = base64.b64decode(image_data)
-    image = Image.open(BytesIO(image_bytes)).convert("RGB")
-    image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
-    image.save(image_path)
-    data_points_add = extract_data_from_plot(
-        image_path,
-        data["color_num"]
-    )
+    if data["image_data"]:
+        image_data = data["image_data"].split(",")[1]
+        image_bytes = base64.b64decode(image_data)
+        image = Image.open(BytesIO(image_bytes)).convert("RGB")
+        image_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}.png")
+        image.save(image_path)
+        data_points_add = extract_data_from_plot(
+            image_path,
+            data["left"],
+            data["top"],
+            data["bottom"],
+            data["right"],
+            1 #only get one
+        )
+        _, rgb_value = next(iter(data_points_add.items()))
+    else:
+        image_data = None
+        rgb_value = None
     request_id = uuid.uuid4().hex
     session_file = os.path.join(OUTPUT_DIR, f"session_{request_id}.npz")
     global data_points #make it sync globally
-    data_points = data_points.extend(data_points_add)
+    rgb_keys = list(data_points.keys())
+    if data["color_num"]-1 < len(data_points):
+        if rgb_value:
+            data_points[rgb_keys[data["color_num"]-1]] = rgb_value
+        else:
+            del data_points[rgb_keys[data["color_num"]-1]]
+    else:
+        if rgb_value:
+            data_points[get_random_rgb(rgb_keys)] = rgb_value
+
     np.savez(session_file, **{str(k): v for k, v in data_points.items()})
     gain_shift = [0.0] * len(data_points)
     pout_shift = [0.0] * len(data_points)

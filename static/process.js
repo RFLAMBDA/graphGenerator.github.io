@@ -30,6 +30,33 @@
       reader.readAsDataURL(file);
     }
 
+    // Step 2 drag-and-drop and click
+    dropZone_add.addEventListener("click", () => fileInput_add.click());
+    dropZone_add.addEventListener("dragover", e => {
+      e.preventDefault(); dropZone_add.classList.add("dragover");
+    });
+    dropZone_add.addEventListener("dragleave", () => dropZone_add.classList.remove("dragover"));
+    dropZone_add.addEventListener("drop", e => {
+      e.preventDefault(); dropZone_add.classList.remove("dragover");
+      handleFileAdd(e.dataTransfer.files[0]);
+    });
+    fileInput_add.addEventListener("change", e => handleFileAdd(e.target.files[0]));
+
+    function handleFileAdd(file) {
+      if (!file || file.type !== "image/png"){
+        imageBase64 = "";
+        preview_add.style.display = "none";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        imageBase64 = e.target.result;
+        preview_add.src = imageBase64;
+        preview_add.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+
     //Step 1
     document.getElementById("submit-initial").addEventListener("click", async () => {
       if (!imageBase64) return alert("Please upload a PNG image.");
@@ -67,12 +94,16 @@
 
     //Step 2
     document.getElementById("submit-add").addEventListener("click", async () => {
-      if (!imageBase64) return alert("Please upload a PNG image.");
-      document.getElementById("loadingAddMoreInit").style.display = "block";
+      if (!imageBase64) alert("Any color Number will be deleted");
+      document.getElementById("loadingAddMoreColor").style.display = "block";
 
       const payload = {
         image_data: imageBase64,
-        color_num: parseInt(document.getElementById("color_num").value)
+        color_num: parseInt(document.getElementById("color_num").value),
+        top: parseFloat(document.getElementById("top").value),
+        bottom: parseFloat(document.getElementById("bottom").value),
+        left: parseFloat(document.getElementById("left").value),
+        right: parseFloat(document.getElementById("right").value)
       };
 
       const response = await fetch("/process-add", {

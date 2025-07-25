@@ -4,7 +4,13 @@ A Flask + JavaScript web app that converts amplifier gain vs. output power plots
 
 ---
 
-## 🚀 Features Version 1.1.1
+## 🚀 Features Version 1.2.0
+    
+- **Enhanced Step 2 Functionality**: Added drag-and-drop and click-to-select file upload for the "Add more color" section
+- Improved user experience with responsive file upload interface
+- Better error handling for invalid file types in Step 2
+
+## Past Version 1.1.1
     
 - Added a new "scaling" section
 

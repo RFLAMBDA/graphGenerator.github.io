@@ -16,7 +16,7 @@ import sys
 # --- Define Flask app and output dir ---
 app = Flask(__name__)
 
-APP_VERSION = "1.1.1"
+APP_VERSION = "1.2.1"
 
 @app.route("/")
 def index():

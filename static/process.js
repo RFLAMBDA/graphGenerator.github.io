@@ -127,6 +127,19 @@
       document.getElementById("scale").value = [8,6];
     });
 
+    //Skip Step 2
+    document.getElementById("skip-step2").addEventListener("click", () => {
+      // Skip Step 2 and go directly to Step 3 without making any changes
+      document.getElementById("step3").style.display = "block";
+      
+      // Set default values for Step 3
+      const count = parseInt(document.getElementById("max_freq").value);
+      const zeros = Array(count).fill(0).join(",");
+      document.getElementById("gain_shift").value = zeros;
+      document.getElementById("pout_shift").value = zeros;
+      document.getElementById("scale").value = "8,6";
+    });
+
     //Step 3
     document.getElementById("submit-relabel").addEventListener("click", async () => {
       if (!sessionId) return alert("No session found.");

@@ -20,6 +20,57 @@
     #drop-zone_add.dragover { background-color: #e0f7ff; }
     #preview { max-width: 100%; margin-top: 10px; display: none; }
     #sample { max-width: 100%; margin-top: 10px; display: block; }
+    
+    /* Info system styles */
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .info-icon {
+      cursor: pointer;
+      color: #007bff;
+      font-size: 18px;
+      font-weight: bold;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      transition: all 0.3s ease;
+    }
+    .info-icon:hover {
+      background: #007bff;
+      color: white;
+    }
+    .info-panel {
+      display: none;
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .info-panel.show {
+      display: block;
+    }
+    .info-panel h4 {
+      margin-top: 0;
+      color: #495057;
+    }
+    .info-panel ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .info-panel li {
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -30,6 +81,26 @@
 
   <!-- Step 1: Upload + Region Selection -->
   <div id="step1">
+    <div class="step-header">
+      <h3>Step 1: Upload & Region Selection</h3>
+      <div class="info-icon" onclick="toggleInfo('step1-info')">?</div>
+    </div>
+    <div id="step1-info" class="info-panel">
+      <h4>What this step does:</h4>
+      <ul>
+        <li>Upload a PNG image of your gain vs. output power plot</li>
+        <li>Define the region boundaries (Top, Bottom, Left, Right) to extract data from</li>
+        <li>Specify the number of frequencies in your plot</li>
+        <li>The system will automatically extract curve data points from the selected region</li>
+      </ul>
+      <h4>Tips:</h4>
+      <ul>
+        <li>Use the sample marker above as a reference for your plot format</li>
+        <li>Make sure your image is clear and the curves are well-defined</li>
+        <li>Accurate region boundaries will improve data extraction quality</li>
+      </ul>
+    </div>
+    
     <div id="drop-zone">Drop a PNG image here or click to select</div>
     <input type="file" id="fileInput" accept="image/png" style="display: none;">
     <img id="preview" />
@@ -48,6 +119,32 @@
 
   <!-- Step 2: Add more color -->
   <div id="step2" style="display:none;">
+    <div class="step-header">
+      <h3>Step 2: Add More Color (Optional)</h3>
+      <div class="info-icon" onclick="toggleInfo('step2-info')">?</div>
+    </div>
+    <div id="step2-info" class="info-panel">
+      <h4>What this step does:</h4>
+      <ul>
+        <li>Add additional frequency curves to your existing plot</li>
+        <li>Upload a single frequency Pout vs Pin plot image</li>
+        <li>Specify a color number to assign to the new curve</li>
+        <li>If the color number already exists, it will replace that curve</li>
+        <li>If the color number is new, it will create a new curve</li>
+      </ul>
+      <h4>When to use:</h4>
+      <ul>
+        <li>When you have additional frequency data to add to your plot</li>
+        <li>To replace existing curves with updated data</li>
+        <li>To combine multiple frequency measurements into one plot</li>
+      </ul>
+      <h4>Skip option:</h4>
+      <ul>
+        <li>If you don't need to add more colors, click "Skip" to go directly to Step 3</li>
+        <li>Your current data will remain unchanged</li>
+      </ul>
+    </div>
+    
     <h3>Input single frequency Pout vs Pin plot (optional):</h2>
     <div id="drop-zone_add">Drop a PNG image here or click to select</div>
     <input type="file" id="fileInput_add" accept="image/png" style="display: none;">
@@ -63,6 +160,31 @@
   
   <!-- Step 3: Relabel -->
   <div id="step3" style="display:none;">
+    <div class="step-header">
+      <h3>Step 3: Color Labeling</h3>
+      <div class="info-icon" onclick="toggleInfo('step3-info')">?</div>
+    </div>
+    <div id="step3-info" class="info-panel">
+      <h4>What this step does:</h4>
+      <ul>
+        <li>Assign specific colors to your frequency curves</li>
+        <li>Define the scale (x and y span) for your plot</li>
+        <li>Customize the visual appearance of your curves</li>
+        <li>Prepare the plot for final adjustments</li>
+      </ul>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>Color List:</strong> Comma-separated list of color numbers (e.g., "2,4,6")</li>
+        <li><strong>Scale:</strong> X and Y span values (e.g., "5,5" for 5x5 scale)</li>
+      </ul>
+      <h4>Tips:</h4>
+      <ul>
+        <li>Color numbers should match your frequency data</li>
+        <li>Scale values affect the plot's visual range</li>
+        <li>You can preview the changes before proceeding to the final step</li>
+      </ul>
+    </div>
+    
     <label>Color List (comma-separated):</label><input type="text" id="color_list" placeholder="e.g., 2,4,6">
     <label>Scale (x span, y span):</label><input type="text" id="scale" placeholder="e.g. 5,5">
     <button id="submit-relabel">Apply Color Label</button>
@@ -74,6 +196,38 @@
 
   <!-- Step 4: Gain/Pout Shift -->
   <div id="step4" style="display:none;">
+    <div class="step-header">
+      <h3>Step 4: Gain & Pout Shift (Final Adjustments)</h3>
+      <div class="info-icon" onclick="toggleInfo('step4-info')">?</div>
+    </div>
+    <div id="step4-info" class="info-panel">
+      <h4>What this step does:</h4>
+      <ul>
+        <li>Apply final adjustments to your gain and output power curves</li>
+        <li>Fine-tune the positioning of your frequency curves</li>
+        <li>Generate the final optimized plot</li>
+        <li>Download your processed data and plot</li>
+      </ul>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>Gain Shift:</strong> Optional comma-separated values to adjust gain curves (e.g., "0.5,-0.3,0")</li>
+        <li><strong>Pout Shift:</strong> Optional comma-separated values to adjust output power curves (e.g., "1,0,-2")</li>
+      </ul>
+      <h4>How shifts work:</h4>
+      <ul>
+        <li>Positive values move curves up/right</li>
+        <li>Negative values move curves down/left</li>
+        <li>Values correspond to your frequency order</li>
+        <li>Leave empty for no adjustment</li>
+      </ul>
+      <h4>Final Output:</h4>
+      <ul>
+        <li>Processed plot with all adjustments applied</li>
+        <li>Clean numeric data for further analysis</li>
+        <li>Ready for publication or analysis</li>
+      </ul>
+    </div>
+    
     <label>Gain Shift (optional, comma-separated):</label><input type="text" id="gain_shift" placeholder="e.g., 0.5,-0.3,0">
     <label>Pout Shift (optional, comma-separated):</label><input type="text" id="pout_shift" placeholder="e.g., 1,0,-2">
     <button id="submit-shift">Apply Shift</button>

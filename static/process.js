@@ -1,6 +1,16 @@
     let imageBase64 = "";
     let sessionId = "";
 
+    // Info panel toggle function
+    function toggleInfo(panelId) {
+      const panel = document.getElementById(panelId);
+      if (panel.classList.contains('show')) {
+        panel.classList.remove('show');
+      } else {
+        panel.classList.add('show');
+      }
+    }
+
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("fileInput");
     const preview = document.getElementById("preview");

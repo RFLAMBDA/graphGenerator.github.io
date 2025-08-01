@@ -3,7 +3,11 @@
 A Flask + JavaScript web app that converts amplifier gain vs. output power plots (PNG images) into clean numeric data and lets you adjust curves interactively.
 
 ---
-## 🚀 Features Version 1.2.1
+## 🚀 Features Version 1.2.2
+    
+- Added info section for each step
+
+## Past Version 1.2.1
     
 - Fixed the bug with adding a skip on step 2
 

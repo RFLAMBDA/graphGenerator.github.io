@@ -100,6 +100,12 @@
       document.getElementById("gain_shift").value = zeros;
       document.getElementById("pout_shift").value = zeros;
       document.getElementById("scale").value = [8,6];
+      
+      // Pre-fill T, B, L, R values in Step 2
+      document.getElementById("top_add").value = document.getElementById("top").value;
+      document.getElementById("bottom_add").value = document.getElementById("bottom").value;
+      document.getElementById("left_add").value = document.getElementById("left").value;
+      document.getElementById("right_add").value = document.getElementById("right").value;
     });
 
     //Step 2
@@ -110,10 +116,10 @@
       const payload = {
         image_data: imageBase64,
         color_num: parseInt(document.getElementById("color_num").value),
-        top: parseFloat(document.getElementById("top").value),
-        bottom: parseFloat(document.getElementById("bottom").value),
-        left: parseFloat(document.getElementById("left").value),
-        right: parseFloat(document.getElementById("right").value)
+        top: parseFloat(document.getElementById("top_add").value),
+        bottom: parseFloat(document.getElementById("bottom_add").value),
+        left: parseFloat(document.getElementById("left_add").value),
+        right: parseFloat(document.getElementById("right_add").value)
       };
 
       const response = await fetch("/process-add", {

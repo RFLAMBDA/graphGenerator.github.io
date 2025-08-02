@@ -132,6 +132,12 @@
         <li>If the color number already exists, it will replace that curve</li>
         <li>If the color number is new, it will create a new curve</li>
       </ul>
+      <h4>Region Boundaries:</h4>
+      <ul>
+        <li>The T, B, L, R values are pre-filled from Step 1</li>
+        <li>You can modify these values if the new image has different boundaries</li>
+        <li>These define the region to extract data from the new image</li>
+      </ul>
       <h4>When to use:</h4>
       <ul>
         <li>When you have additional frequency data to add to your plot</li>
@@ -149,6 +155,12 @@
     <div id="drop-zone_add">Drop a PNG image here or click to select</div>
     <input type="file" id="fileInput_add" accept="image/png" style="display: none;">
     <img id="preview_add" />
+    
+    <label>Top(T):</label><input type="number" id="top_add" step="any" required>
+    <label>Bottom(B):</label><input type="number" id="bottom_add" step="any" required>
+    <label>Left(L):</label><input type="number" id="left_add" step="any" required>
+    <label>Right(R):</label><input type="number" id="right_add" step="any" required>
+    
     <label>Color Number (optional, if number exist, data will be replaced; else if number do not, data will be created):</label><input type="text" id="color_num" placeholder="e.g., 2">
     <button id="submit-add">Apply Added Color</button><button id="skip-step2">Skip</button>
   </div>
@@ -218,7 +230,7 @@
         <li>Positive values move curves up/right</li>
         <li>Negative values move curves down/left</li>
         <li>Values correspond to your frequency order</li>
-        <li>Leave empty for no adjustment</li>
+        <li>Leave the value "0" for no adjustment</li>
       </ul>
       <h4>Final Output:</h4>
       <ul>

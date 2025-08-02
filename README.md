@@ -6,6 +6,7 @@ A Flask + JavaScript web app that converts amplifier gain vs. output power plots
 ## 🚀 Features Version 1.2.2
     
 - Added info section for each step
+- Added T B L R for Step 2 as well
 
 ## Past Version 1.2.1
     
